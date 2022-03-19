@@ -1,0 +1,44 @@
+name: "issue2atom"
+description: "Generate Atom RSS from GitHub Issues"
+
+inputs:
+  user:
+    description: "Target GitHub user name"
+    required: true
+    default: "octocat"
+  repo:
+    description: "Target GitHub repository name"
+    required: true
+    default: "hello-world"
+  max_issue_num:
+    description: "The number of issues included in Atom"
+    required: false
+    default: "10"
+  per_page:
+    description: "The number of request issues"
+    required: false
+    default: "30"
+  allow_pr:
+    description: "Allow pull request or not"
+    required: false
+    default: "False"
+
+outputs:
+  status_code:
+    description: "Status code from Github API"
+  atom_file_path:
+    description: "ATOM file path"
+  atom_file_size:
+    description: "ATOM file size"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  env:
+    USER: ${{ inputs.user }}
+    REPO: ${{ inputs.repo }}
+    MAX_ISSUE_NUM: ${{ inputs.max_issue_num }}
+
+branding:
+  icon: "book"
+  color: "green"
