@@ -16,7 +16,7 @@ jobs:
 
       - name: issue2atom
         id: issue2atom
-        uses: tsubasaogawa/issue2atom@v1
+        uses: tsubasaogawa/issue2atom@v2
         with:
           user: "xueyuanl"
           repo: "daily-hackernews"
