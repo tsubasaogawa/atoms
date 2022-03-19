@@ -1,6 +1,6 @@
 on:
-  # schedule:
-  #  - cron: "15 0 * * *"
+  schedule:
+    - cron: "15 5 * * *"
   workflow_dispatch:
 
 jobs:
@@ -18,8 +18,8 @@ jobs:
         id: issue2atom
         uses: tsubasaogawa/issue2atom@v1
         with:
-          user: "octocat"
-          repo: "hello-world"
+          user: "xueyuanl"
+          repo: "daily-hackernews"
           max_issue_num: 10
 
       - name: Push generated atom file
