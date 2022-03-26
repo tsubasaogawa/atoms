@@ -15,7 +15,9 @@ REPO = os.environ['REPO']
 
 MAX_ISSUE_NUM = int(os.environ.get('MAX_ISSUE_NUM', '10'))
 PER_PAGE = int(os.environ.get('PER_PAGE', '30'))
-SHORTEN_LENGTH = 100
+SHORTEN_LENGTH = int(os.environ.get('SHORTEN_LENGTH', '100'))
+ATOM_BASE_URL = os.environ.get('ATOM_BASE_URL', '')
+
 REQUEST_URI = f'https://api.github.com/repos/{USER}/{REPO}/issues?per_page={PER_PAGE}'
 ALLOW_PR = os.environ.get('ALLOW_PR', 'false').lower() == 'true'
 
@@ -37,12 +39,14 @@ def main():
         reverse=True
     )
 
-    feed_id = f'issue2atom_{USER}/{REPO}/issues'
+    feed_id = f'tag:github.com,2006-01-02:/{USER}/{REPO}/issues'
 
     feed = FeedGenerator()
     feed.id(feed_id)
-    feed.title(f'GitHub Issues {USER}/{REPO}')
+    feed.title(f'{USER}/{REPO} - GitHub Issues')
     feed.author({'name': USER})
+    if ATOM_BASE_URL:
+        feed.link(href=f'{ATOM_BASE_URL}/{USER}/{REPO}/atom.xml', rel='self')
     feed.link(href=f'https://github.com/{USER}/{REPO}/issues', rel='alternate')
     # fg.logo('http://ex.com/logo.jpg')
     feed.subtitle(f'GitHub Issues of {USER}/{REPO}')
@@ -55,8 +59,9 @@ def main():
         entry.link(href=issue['html_url'], rel='alternate')
         entry.published(issue['created_at'])
         entry.updated(issue['updated_at'])
-        summarized_body = ''.join(issue['body'].splitlines())[:SHORTEN_LENGTH] + '...'
-        body_html = html.escape(markdown.markdown(issue['body']))
+        body_nolf = ''.join(issue['body'].splitlines())
+        summarized_body = body_nolf[:SHORTEN_LENGTH] + '...'
+        body_html = html.escape(markdown.markdown(body_nolf), quote=False)
         entry.summary(summarized_body)
         entry.content(content=body_html, type='html')
 
