@@ -29,6 +29,14 @@ jobs:
           user: "tsubasaogawa"
           repo: "atoms"
           max_issue_num: 10
+          
+      - name: issue2atom
+        id: issue2atom3
+        uses: ./ # tsubasaogawa/issue2atom@v2
+        with:
+          user: "octocat"
+          repo: "hello-world"
+          max_issue_num: 10
 
       - name: Push generated atom file
         uses: stefanzweifel/git-auto-commit-action@v4
