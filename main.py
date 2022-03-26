@@ -40,7 +40,7 @@ def main():
         reverse=True
     )
 
-    feed_id = f'tag:github.com,2006-01-02:/{USER}/{REPO}/issues'
+    feed_id = f'tag:issue2atom,2006-01-02:/{USER}/{REPO}/issues'
 
     feed = FeedGenerator()
     feed.id(feed_id)
@@ -61,9 +61,9 @@ def main():
         entry.published(issue['created_at'])
         entry.updated(issue['updated_at'])
         summarized_body = ''.join(issue['body'].splitlines())[:SHORTEN_LENGTH] + '...'
-        body_html = markdown.markdown(issue['body'], extensions=[GithubFlavoredMarkdownExtension()]) # html.escape(markdown.markdown(body_nolf), quote=False)
+        body_html = html.escape(markdown.markdown(issue['body'], extensions=[GithubFlavoredMarkdownExtension()]), quote=False)
         entry.summary(summarized_body)
-        entry.content(content=''.join(body_html.splitlines()), type='CDATA')
+        entry.content(content=''.join(body_html.splitlines()), type='html')
 
     save_dir = f'{USER}/{REPO}'
     atom_file = f'{save_dir}/atom.xml'
