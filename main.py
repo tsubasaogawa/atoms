@@ -61,7 +61,7 @@ def main():
         entry.published(issue['created_at'])
         entry.updated(issue['updated_at'])
         summarized_body = ''.join(issue['body'].splitlines())[:SHORTEN_LENGTH] + '...'
-        body_html = html.escape(markdown.markdown(issue['body'], extensions=[GithubFlavoredMarkdownExtension()]), quote=False)
+        body_html = markdown.markdown(issue['body'], extensions=[GithubFlavoredMarkdownExtension()])
         entry.summary(summarized_body)
         entry.content(content=''.join(body_html.splitlines()), type='html')
 
