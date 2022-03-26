@@ -1,5 +1,7 @@
 from feedgen.feed import FeedGenerator
+import html
 import json
+import markdown
 import os
 import requests
 
@@ -13,6 +15,7 @@ REPO = os.environ['REPO']
 
 MAX_ISSUE_NUM = int(os.environ.get('MAX_ISSUE_NUM', '10'))
 PER_PAGE = int(os.environ.get('PER_PAGE', '30'))
+SHORTEN_LENGTH = 100
 REQUEST_URI = f'https://api.github.com/repos/{USER}/{REPO}/issues?per_page={PER_PAGE}'
 ALLOW_PR = os.environ.get('ALLOW_PR', 'false').lower() == 'true'
 
@@ -26,14 +29,14 @@ def is_allowed_issue(issue):
 
 def main():
     response = requests.get(REQUEST_URI, headers=REQUEST_HEADER)
-    issues = json.loads(response.text)
 
+    issues = json.loads(response.text)
     target_issues = sorted(
         list(filter(is_allowed_issue, issues)),
         key=lambda x: x['number'],
-        reverse=False
+        reverse=True
     )
- 
+
     feed_id = f'issue2atom_{USER}/{REPO}/issues'
 
     feed = FeedGenerator()
@@ -46,13 +49,16 @@ def main():
     feed.language('en')
 
     for issue in target_issues[0:MAX_ISSUE_NUM]:
-        entry = feed.add_entry()
+        entry = feed.add_entry(order='append')
         entry.id(f'{feed_id}/{issue["number"]}')
         entry.title(issue['title'])
         entry.link(href=issue['html_url'], rel='alternate')
         entry.published(issue['created_at'])
         entry.updated(issue['updated_at'])
-        entry.summary(issue['body'])
+        summarized_body = ''.join(issue['body'].splitlines())[:SHORTEN_LENGTH] + '...'
+        body_html = html.escape(markdown.markdown(issue['body']))
+        entry.summary(summarized_body)
+        entry.content(content=body_html, type='html')
 
     save_dir = f'{USER}/{REPO}'
     atom_file = f'{save_dir}/atom.xml'
