@@ -2,6 +2,7 @@ from feedgen.feed import FeedGenerator
 import html
 import json
 import markdown
+from mdx_gfm import GithubFlavoredMarkdownExtension
 import os
 import requests
 
@@ -59,11 +60,10 @@ def main():
         entry.link(href=issue['html_url'], rel='alternate')
         entry.published(issue['created_at'])
         entry.updated(issue['updated_at'])
-        body_nolf = ''.join(issue['body'].splitlines())
-        summarized_body = body_nolf[:SHORTEN_LENGTH] + '...'
-        body_html = html.escape(markdown.markdown(body_nolf), quote=False)
+        summarized_body = ''.join(issue['body'].splitlines())[:SHORTEN_LENGTH] + '...'
+        body_html = markdown.markdown(issue['body'], extensions=[GithubFlavoredMarkdownExtension()]) # html.escape(markdown.markdown(body_nolf), quote=False)
         entry.summary(summarized_body)
-        entry.content(content=body_html, type='html')
+        entry.content(content=''.join(body_html.splitlines()), type='CDATA')
 
     save_dir = f'{USER}/{REPO}'
     atom_file = f'{save_dir}/atom.xml'
