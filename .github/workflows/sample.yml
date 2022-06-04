@@ -46,3 +46,4 @@ jobs:
           file_pattern: "**/atom.xml"
           create_branch: true
           push_options: "--force"
+          commit_author: GitHub Actions <actions@github.com>
